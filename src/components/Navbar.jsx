@@ -21,7 +21,7 @@ export default function Navbar({ onLogout }) {
   }
 
   return (
-    <header style={{
+    <header className="no-print" style={{
       position: 'sticky',
       top: 0,
       zIndex: 50,

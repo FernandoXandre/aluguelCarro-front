@@ -10,3 +10,15 @@ body {
   background-color: #111827;
   color: #F9FAFB;
 }
+
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+
+  body {
+    background: white !important;
+    color: #111 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

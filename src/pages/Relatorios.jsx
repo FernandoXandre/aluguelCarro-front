@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import { apiFetch } from '../services/api';
-import { colors, card } from '../theme';
+import { colors, card, btnPrimary } from '../theme';
 
 // ── Gráfico de barras em CSS puro ─────────────────────────────
 function BarChart({ dados }) {
@@ -115,25 +115,45 @@ export default function Relatorios() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+      {/* Cabeçalho exibido apenas na impressão */}
+      <div className="print-only" style={{ display: 'none', marginBottom: '8px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#6B7280', marginBottom: '4px' }}>
+          Análises e Relatórios
+        </p>
+        <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#111' }}>
+          Relatório Anual — {ano}
+        </h1>
+      </div>
+
       <PageHeader
         subtitle="Análises e Relatórios"
         title="Relatórios"
         action={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ color: colors.textSubtle, fontSize: '13px', fontWeight: 600 }}>Ano:</span>
-            <select
-              value={ano}
-              onChange={e => setAno(Number(e.target.value))}
-              style={{
-                backgroundColor: colors.surface, border: `1.5px solid ${colors.border}`,
-                borderRadius: '10px', padding: '10px 16px', color: colors.textMain,
-                fontSize: '14px', fontWeight: 700, cursor: 'pointer', outline: 'none',
-              }}
-              onFocus={e => e.target.style.borderColor = colors.primary}
-              onBlur={e => e.target.style.borderColor = colors.border}
+          <div className="no-print" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span style={{ color: colors.textSubtle, fontSize: '13px', fontWeight: 600 }}>Ano:</span>
+              <select
+                value={ano}
+                onChange={e => setAno(Number(e.target.value))}
+                style={{
+                  backgroundColor: colors.surface, border: `1.5px solid ${colors.border}`,
+                  borderRadius: '10px', padding: '10px 16px', color: colors.textMain,
+                  fontSize: '14px', fontWeight: 700, cursor: 'pointer', outline: 'none',
+                }}
+                onFocus={e => e.target.style.borderColor = colors.primary}
+                onBlur={e => e.target.style.borderColor = colors.border}
+              >
+                {anos.map(a => <option key={a} value={a}>{a}</option>)}
+              </select>
+            </div>
+            <button
+              onClick={() => window.print()}
+              style={{ ...btnPrimary, padding: '10px 20px' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = colors.primaryHover}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = colors.primary}
             >
-              {anos.map(a => <option key={a} value={a}>{a}</option>)}
-            </select>
+              Imprimir Relatório
+            </button>
           </div>
         }
       />
@@ -156,8 +176,8 @@ export default function Relatorios() {
         ))}
       </div>
 
-      {/* Gráficos */}
-      <div style={{ ...card, padding: '32px' }}>
+      {/* Gráficos — oculto na impressão */}
+      <div className="no-print" style={{ ...card, padding: '32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
           <div>
             <p style={{ color: colors.primary, fontSize: '11px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', marginBottom: '4px' }}>
