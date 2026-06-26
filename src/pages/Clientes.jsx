@@ -39,6 +39,27 @@ function Avatar({ nome }) {
   );
 }
 
+// ── Máscara de CPF: 000.000.000-00 ────────────────────────────
+function mascaraCpf(valor) {
+  return valor
+    .replace(/\D/g, '')
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+}
+
+// ── Validação de CPF (algoritmo oficial Receita Federal) ───────
+function cpfValido(cpf) {
+  const nums = cpf.replace(/\D/g, '');
+  if (nums.length !== 11 || /^(\d)\1{10}$/.test(nums)) return false;
+  const calc = (len) =>
+    nums.slice(0, len).split('').reduce((acc, d, i) => acc + Number(d) * (len + 1 - i), 0);
+  const d1 = ((calc(9) * 10) % 11) % 10;
+  const d2 = ((calc(10) * 10) % 11) % 10;
+  return d1 === Number(nums[9]) && d2 === Number(nums[10]);
+}
+
 // ── Formulário ────────────────────────────────────────────────
 const FORM_VAZIO = { nome: '', cpf: '', email: '', telefone: '', endereco: '', cnh: '' };
 
@@ -55,6 +76,7 @@ function FormCliente({ inicial, onSalvar, onCancelar, salvando }) {
     const e = {};
     if (!form.nome.trim())     e.nome     = 'Obrigatório';
     if (!form.cpf.trim())      e.cpf      = 'Obrigatório';
+    else if (!cpfValido(form.cpf)) e.cpf  = 'CPF inválido';
     if (!form.email.trim())    e.email    = 'Obrigatório';
     if (!form.telefone.trim()) e.telefone = 'Obrigatório';
     if (!form.cnh.trim())      e.cnh      = 'Obrigatório';
@@ -78,7 +100,7 @@ function FormCliente({ inicial, onSalvar, onCancelar, salvando }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
         <FormField label="CPF" error={erros.cpf}>
-          <Input placeholder="000.000.000-00" value={form.cpf} onChange={e => set('cpf', e.target.value)} style={fieldStyle} disabled={!!inicial} />
+          <Input placeholder="000.000.000-00" value={form.cpf} onChange={e => set('cpf', mascaraCpf(e.target.value))} style={fieldStyle} disabled={!!inicial} />
         </FormField>
         <FormField label="CNH" error={erros.cnh}>
           <Input placeholder="Número da CNH" value={form.cnh} onChange={e => set('cnh', e.target.value)} style={fieldStyle} />
